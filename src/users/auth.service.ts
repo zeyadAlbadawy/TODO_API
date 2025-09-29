@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -33,5 +37,23 @@ export class AuthService {
       email,
       finalPasswordHashed,
     );
+  }
+
+  async login(email: string, password: string) {
+    // Find if there is a user with this email
+    const [User] = await this.userService.find(email);
+    if (!User)
+      throw new NotFoundException(
+        `There is no user with the email of ${email}`,
+      );
+
+    // get the password and salt
+    const [salt, hashedPassword] = User.password.split('.');
+    const newHashedPassword = (await scrypt(password, salt, 32)) as Buffer;
+    if (hashedPassword !== newHashedPassword.toString('hex'))
+      throw new BadRequestException(
+        `The email or password is incorrect, try again later`,
+      );
+    return User;
   }
 }

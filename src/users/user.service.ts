@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -27,5 +27,12 @@ export class UserService {
     });
 
     return this.userRepo.save(newUser);
+  }
+
+  async update(attrs: Partial<User>, id: string) {
+    const foundedUser = await this.findOne(id);
+    if (!foundedUser) throw new NotFoundException(`There is no user found`);
+    Object.assign(foundedUser, attrs);
+    return this.userRepo.save(foundedUser);
   }
 }

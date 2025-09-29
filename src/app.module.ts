@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
+import { ListModule } from './list/list.module';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { User } from './users/entities/user.entity';
         };
       },
     }),
+    ListModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],
