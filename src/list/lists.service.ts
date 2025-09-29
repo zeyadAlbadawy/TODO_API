@@ -61,4 +61,40 @@ export class ListsService {
     await this.repo.remove(foundedList);
     return { message: 'deleted Successfully' };
   }
+
+  async getListsDueToUser(session: any) {
+    const lists = await this.repo.find({
+      where: {
+        user: {
+          id: session.userId,
+        },
+      },
+    });
+    return lists;
+  }
+
+  async getSingleList(id: string, session: any) {
+    const foundedList = await this.repo.findOne({
+      where: { id },
+      relations: ['user'],
+      select: {
+        user: {
+          id: true,
+        },
+      },
+    });
+
+    console.log(foundedList);
+    // Check if this list belongs to the logged in user
+
+    if (!foundedList)
+      throw new NotFoundException(`There is no list with the provided id`);
+
+    if (foundedList.user.id !== session.userId)
+      throw new UnauthorizedException(
+        `you don't have permissions to access this list, try with another`,
+      );
+
+    return foundedList;
+  }
 }

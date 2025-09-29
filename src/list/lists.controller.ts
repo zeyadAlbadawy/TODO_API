@@ -4,6 +4,7 @@ import {
   Delete,
   Param,
   Patch,
+  Get,
   Post,
   Session,
   UseGuards,
@@ -42,5 +43,15 @@ export class ListsController {
   @Delete('/:id')
   deleteList(@Param('id') id: string, @Session() session: any) {
     return this.listService.deleteList(id, session);
+  }
+
+  @Get()
+  retriveAllLists(@Session() session: any) {
+    return this.listService.getListsDueToUser(session);
+  }
+
+  @Get('/:id')
+  getOneList(@Param('id') id: string, @Session() sesssion: any) {
+    return this.listService.getSingleList(id, sesssion);
   }
 }
