@@ -1,6 +1,7 @@
 import { Copy } from '@nestjs/common';
 import { IsUUID, IsEmail, MinLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { List } from 'src/list/entities/list.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -19,4 +20,7 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany((type) => List, (list) => list.user)
+  lists: List[];
 }
