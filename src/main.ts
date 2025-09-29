@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import session from 'express-session';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // whitelist means that any not defined prop will be removed
   app.use(
     session({
-      secret: 'my-secret',
+      secret: configService.getOrThrow<string>('COOKIE_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: {
