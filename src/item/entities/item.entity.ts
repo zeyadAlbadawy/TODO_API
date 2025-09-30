@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Expose, Transform } from 'class-transformer';
+import { List } from 'src/list/entities/list.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Item {
@@ -14,4 +15,9 @@ export class Item {
 
   @Column({ default: false })
   completed: Boolean;
+
+  @ManyToOne(() => List, (list) => list.items, {
+    onDelete: 'CASCADE',
+  })
+  list: List;
 }

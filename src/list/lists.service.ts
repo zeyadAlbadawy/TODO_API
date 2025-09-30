@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,9 +8,32 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { List } from './entities/list.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { validate as uuidValidate } from 'uuid';
+
 @Injectable()
 export class ListsService {
   constructor(@InjectRepository(List) private repo: Repository<List>) {}
+
+  // Helper
+  async checktheListCreator(id: string, session: any) {
+    if (!uuidValidate(id))
+      throw new BadRequestException(
+        `The id of ${id} is not valid. try with a valid one!`,
+      );
+    const foundedList = await this.repo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!foundedList)
+      throw new NotFoundException(`No List found with the provided id`);
+
+    // Ensure that the user who created the list is the one who try to delete it
+    if (foundedList.user.id !== session.userId)
+      throw new UnauthorizedException(
+        `You don't have permission to do this  action`,
+      );
+    return foundedList;
+  }
 
   async createList(title: string, user: User) {
     const newList = this.repo.create({ title });
@@ -84,7 +108,6 @@ export class ListsService {
       },
     });
 
-    console.log(foundedList);
     // Check if this list belongs to the logged in user
 
     if (!foundedList)

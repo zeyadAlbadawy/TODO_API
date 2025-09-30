@@ -8,6 +8,7 @@ import { User } from './users/entities/user.entity';
 import { ListModule } from './list/list.module';
 import { ItemModule } from './item/item.module';
 import { List } from './list/entities/list.entity';
+import { Item } from './item/entities/item.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { List } from './list/entities/list.entity';
           port: +configService.get('DB_PORT'),
           password: configService.get<string>('DB_PASSWORD'),
           username: configService.get<string>('DB_USER_NAME'),
-          entities: [User, List],
+          entities: [User, List, Item],
           database: 'todo_api',
           synchronize: true,
           logging: true,
