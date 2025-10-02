@@ -22,6 +22,7 @@ import { User } from './entities/user.entity';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
 
 @UseInterceptors(new UserInterceptor(ResponseUserDto))
+// @UseInterceptors(CurrentUserInterceptor) // applied globally
 @Controller('users/auth')
 export class UserController {
   constructor(
@@ -59,7 +60,6 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @UseInterceptors(CurrentUserInterceptor)
   @Get('/whoami')
   whoami(@CurrentUser() user: User) {
     return user;

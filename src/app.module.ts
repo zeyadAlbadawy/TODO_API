@@ -9,6 +9,8 @@ import { ListModule } from './list/list.module';
 import { ItemModule } from './item/item.module';
 import { List } from './list/entities/list.entity';
 import { Item } from './item/entities/item.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CurrentUserInterceptor } from './users/interceptors/current-user.interceptor';
 
 @Module({
   imports: [
@@ -37,6 +39,12 @@ import { Item } from './item/entities/item.entity';
     ItemModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CurrentUserInterceptor,
+    },
+  ],
 })
 export class AppModule {}

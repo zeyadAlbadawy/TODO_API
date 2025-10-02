@@ -6,6 +6,7 @@ import { List } from './entities/list.entity';
 import { CurrentUserInterceptor } from 'src/users/interceptors/current-user.interceptor';
 import { UsersModule } from 'src/users/users.module';
 import { UserInterceptor } from 'src/users/interceptors/user-serialize.interceptor';
+import { AdminGuard } from 'src/users/guards/admin.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([List]), UsersModule], // register the list entity

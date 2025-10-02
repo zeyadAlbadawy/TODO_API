@@ -16,6 +16,9 @@ export class List {
   @Column()
   title: string;
 
+  @Column({ default: false })
+  archieved: Boolean;
+
   @ManyToOne(() => User, (user) => user.lists)
   user: User;
 

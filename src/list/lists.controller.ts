@@ -18,9 +18,11 @@ import { AuthGuard } from 'src/users/guards/auth.guard';
 import { CurrentUserInterceptor } from 'src/users/interceptors/current-user.interceptor';
 import { UserInterceptor } from 'src/users/interceptors/user-serialize.interceptor';
 import { ListResDto } from './dtos/response-list.dto';
+import { AdminGuard } from 'src/users/guards/admin.guard';
 
+// Guards get Execunted before interceptors
 @Controller('lists')
-@UseInterceptors(CurrentUserInterceptor)
+// @UseInterceptors(CurrentUserInterceptor) // applied globally
 @UseGuards(AuthGuard)
 export class ListsController {
   constructor(private readonly listService: ListsService) {}
@@ -40,6 +42,11 @@ export class ListsController {
     return this.listService.updateList(body.title, id, session);
   }
 
+  @Patch('/aurchieve/:id')
+  updateListArchieveStats(@Param('id') id: string, @Session() session: any) {
+    return this.listService.updateArchieveStats(id, session);
+  }
+
   @Delete('/:id')
   deleteList(@Param('id') id: string, @Session() session: any) {
     return this.listService.deleteList(id, session);
@@ -48,6 +55,13 @@ export class ListsController {
   @Get()
   retriveAllLists(@Session() session: any) {
     return this.listService.getListsDueToUser(session);
+  }
+
+  // admin action
+  @UseGuards(AdminGuard)
+  @Get('/all-lists')
+  getAllLists(@Session() session: any) {
+    return this.listService.allAdminLists(session);
   }
 
   @Get('/:id')

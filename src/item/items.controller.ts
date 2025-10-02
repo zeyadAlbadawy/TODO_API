@@ -57,3 +57,6 @@ export class ItemsController {
     return this.itemService.updateItem(id, session, body);
   }
 }
+
+// archieve property on list and update controllers and services
+// give admin restrication to view all lists

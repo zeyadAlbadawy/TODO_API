@@ -7,6 +7,9 @@ export class ListResDto {
   @Expose()
   title: string;
 
+  @Expose()
+  archieved: Boolean;
+
   @Transform(({ obj }) => obj.user?.id)
   @Expose()
   userId: string;
