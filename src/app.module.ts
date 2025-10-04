@@ -11,6 +11,8 @@ import { List } from './list/entities/list.entity';
 import { Item } from './item/entities/item.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CurrentUserInterceptor } from './users/interceptors/current-user.interceptor';
+import { MailerModule } from '@nestjs-modules/mailer';
+import Mail from 'nodemailer/lib/mailer';
 
 @Module({
   imports: [
@@ -37,6 +39,30 @@ import { CurrentUserInterceptor } from './users/interceptors/current-user.interc
     }),
     ListModule,
     ItemModule,
+
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (conficservice: ConfigService) => {
+        return {
+          transport: {
+            host: conficservice.get<string>('EMAIL_HOST'),
+            auth: {
+              user: conficservice.get<string>('EMAIL_USER'),
+              pass: conficservice.get<string>('EMAIL_PASSWORD'),
+            },
+          },
+        };
+      },
+    }),
+    // MailerModule.forRoot({
+    //   transport: {
+    //     host: process.env.EMAIL_HOST,
+    //     auth: {
+    //       user: process.env.EMAIL_USERNAME,
+    //       pass: process.env.EMAIL_PASSWORD,
+    //     },
+    //   },
+    // }),
   ],
   controllers: [AppController],
   providers: [

@@ -5,11 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserService } from './user.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
+import * as crypto from 'crypto';
+
 const scrypt = promisify(_scrypt);
 
 @Injectable()
@@ -18,6 +20,12 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     private userService: UserService,
   ) {}
+
+  async hashPassword(password: string) {
+    const salt = randomBytes(8).toString('hex');
+    const hash = (await scrypt(password, salt, 32)) as Buffer;
+    return salt + '.' + hash.toString('hex');
+  }
 
   async signUp(body: CreateUserDto) {
     const { email, firstName, lastName, password } = body;
@@ -55,5 +63,54 @@ export class AuthService {
         `The email or password is incorrect, try again later`,
       );
     return User;
+  }
+
+  async generateRandomToken(email: string) {
+    const foundedUser = await this.userRepo.findOneBy({ email });
+    if (!foundedUser)
+      throw new NotFoundException(`There is no user with an email of ${email}`);
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    foundedUser.passwordResetToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    foundedUser.passwordResetTokenExpirationDate = new Date(
+      Date.now() + 10 * 60 * 1000,
+    );
+
+    await this.userRepo.save(foundedUser);
+    return resetToken;
+  }
+
+  async resetPassword(email: string, password: string, token: string) {
+    const encryptedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    const foundedUser = await this.userRepo.findOne({
+      where: {
+        email: email,
+        passwordResetToken: encryptedToken,
+        passwordResetTokenExpirationDate: MoreThan(new Date()),
+      },
+    });
+
+    if (!foundedUser)
+      throw new NotFoundException(
+        `There is no user with an email of ${email} and the provided token, try again`,
+      );
+    foundedUser.password = await this.hashPassword(password);
+
+    foundedUser.passwordResetToken = null;
+    foundedUser.passwordResetTokenExpirationDate = null;
+    await this.userRepo.save(foundedUser);
+
+    return {
+      message: 'password changed succesffully',
+    };
   }
 }

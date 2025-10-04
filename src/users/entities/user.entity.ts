@@ -24,6 +24,12 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  passwordResetToken: string | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  passwordResetTokenExpirationDate: Date | null;
+
   @OneToMany((type) => List, (list) => list.user)
   lists: List[];
 }
