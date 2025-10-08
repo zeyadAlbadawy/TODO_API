@@ -6,8 +6,7 @@ import { Item } from './entities/item.entity';
 import { List } from 'src/list/entities/list.entity';
 import { ListsService } from 'src/list/lists.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ScheduleService } from './schedules.service';
-
+import { ScheduleService } from './item-schedule.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Item, List]), ScheduleModule.forRoot()],
   providers: [ItemsService, ListsService, ScheduleService],
