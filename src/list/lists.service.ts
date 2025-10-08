@@ -35,7 +35,7 @@ export class ListsService {
     // Ensure that the user who created the list is the one who try to delete it
     if (foundedList.user.id !== session.userId)
       throw new UnauthorizedException(
-        `You don't have permission to do this  action`,
+        `You don't have permission to do this action`,
       );
     return foundedList;
   }
@@ -158,5 +158,14 @@ export class ListsService {
 
   async allAdminLists(session: any) {
     return await this.repo.find();
+  }
+
+  async getItemsAWithinList(session: any, id: string) {
+    const foundedList = await this.checktheListCreator(id, session);
+    const listWithinItems = await this.repo.findOne({
+      where: { id: foundedList.id },
+      relations: ['items'],
+    });
+    return listWithinItems;
   }
 }

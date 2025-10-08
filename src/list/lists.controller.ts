@@ -68,4 +68,9 @@ export class ListsController {
   getOneList(@Param('id') id: string, @Session() sesssion: any) {
     return this.listService.getSingleList(id, sesssion);
   }
+
+  @Get('/list-items/:id')
+  getAllItemsForOneList(@Session() session: any, @Param('id') id: string) {
+    return this.listService.getItemsAWithinList(session, id);
+  }
 }

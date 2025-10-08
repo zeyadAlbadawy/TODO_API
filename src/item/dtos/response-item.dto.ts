@@ -12,7 +12,13 @@ export class ItemResDto {
   description: string;
 
   @Expose()
+  dueDate: string;
+
+  @Expose()
   completed: Boolean;
+
+  @Expose()
+  expired: Boolean;
 
   @Expose()
   @Transform(({ obj }) => obj.list?.id)

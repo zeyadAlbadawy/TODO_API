@@ -11,6 +11,7 @@ import { Item } from './entities/item.entity';
 import { ItemDto } from './dtos/create-item.dto';
 import { ListsService } from 'src/list/lists.service';
 import { validate as uuidValidate } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ItemsService {
@@ -39,6 +40,7 @@ export class ItemsService {
     id: string,
     title: string,
     description: string | undefined,
+    dueDate: string | undefined,
     session: any,
   ) {
     // Check the user who creates the list is the one who logged in to add
@@ -49,7 +51,11 @@ export class ItemsService {
     );
 
     // if so push the item to the list
-    const newCreatedItem = this.Itemrepo.create({ title, description });
+    const newCreatedItem = this.Itemrepo.create({
+      title,
+      description,
+      dueDate: dueDate ? new Date(dueDate) : null,
+    });
     newCreatedItem.list = listAttached;
     await this.Itemrepo.save(newCreatedItem);
 

@@ -32,6 +32,7 @@ export class ItemsController {
       id,
       body.title,
       body.description,
+      body?.dueDate,
       session,
     );
   }

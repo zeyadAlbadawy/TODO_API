@@ -16,6 +16,16 @@ export class Item {
   @Column({ default: false })
   completed: Boolean;
 
+  @Column({
+    nullable: true,
+    type: 'timestamp',
+    default: new Date(Date.now() + 24 * 60 * 60),
+  })
+  dueDate: Date | null;
+
+  @Column({ default: false })
+  expired: Boolean;
+
   @ManyToOne(() => List, (list) => list.items, {
     onDelete: 'CASCADE',
   })

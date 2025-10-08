@@ -88,6 +88,7 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
+  // NEED TO BE IMPLEMENTED
   @Post('/assign/:id')
   sendListToUser(@Param('id') id: string, @Session() session: any) {
     return this.userService.sendListToUser(id, session);
